@@ -1,0 +1,6 @@
+{
+    "dnsname": "test.example.com",
+    "hostedzoneid": "<YourHostedZoneId>",
+    "accesskeyid": "<AccessKeyId>",
+    "secretaccesskey": "<SecretAccessKey>"
+}
