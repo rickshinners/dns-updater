@@ -16,5 +16,6 @@ rickshinners/dns-updater-docker
 * *AWS_SECRET_ACCESS_KEY* Your AWS secret access key
 * *HOSTED_ZONE_ID* The AWS hosted zone id that contains the target dns name
 * *DNS_NAME* DNS name to set to the running instance's external IP
-* *CRON* The cron schedule on which to run. Defaults to every 5 minutes
+* *CRON* The cron schedule on which to run. Defaults to every 5 minutes. Time is in UTC
 * *DNS_TTL* TTL in seconds for the DNS record.  Defaults to 300
+* *LOG_LEVEL* Logging level [CRITICAL, ERROR, WARNING, INFO, DEBUG] Defaults to INFO
