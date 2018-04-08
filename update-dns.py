@@ -27,14 +27,14 @@ logger.addHandler(ch)
 
 logger.debug('Startup')
 logger.info("AWS_ACCESS_KEY_ID=%s" % os.getenv('AWS_ACCESS_KEY_ID'))
-logger.info("HOSTED_ZONE_ID=%s" % os.getenv('HOSTED_ZONE_ID'))
+logger.info("AWS_HOSTED_ZONE_ID=%s" % os.getenv('AWS_HOSTED_ZONE_ID'))
 logger.info("DNS_NAME=%s" % os.getenv('DNS_NAME'))
 logger.info("DNS_TTL=%s" % os.getenv('DNS_TTL', 300))
 logger.info("CRON=%s" % os.getenv('CRON', '*/5 * * * *'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
 
 def check_required_environment_variables():
-    required_env = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'HOSTED_ZONE_ID', 'DNS_NAME']
+    required_env = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_HOSTED_ZONE_ID', 'DNS_NAME']
     for env in required_env:
         if(os.getenv(env) == None):
             raise Exception("The environment variable %s must be set" % env)
@@ -65,7 +65,7 @@ def get_changebatch(dnsname, ipaddress, ttl):
 def get_current_ip():
     return check_output(['aws', 'route53',
         'test-dns-answer',
-        '--hosted-zone-id', os.getenv('HOSTED_ZONE_ID'),
+        '--hosted-zone-id', os.getenv('AWS_HOSTED_ZONE_ID'),
         '--record-name', os.getenv('DNS_NAME'),
         '--record-type', 'A',
         '--query', 'RecordData[0]',
@@ -80,7 +80,7 @@ def check_dns_and_update():
         changebatch = get_changebatch(os.getenv('DNS_NAME'), myip, os.getenv('DNS_TTL',300))
         change_message = check_output(['aws', 'route53',
             'change-resource-record-sets',
-            '--hosted-zone-id', os.getenv('HOSTED_ZONE_ID'),
+            '--hosted-zone-id', os.getenv('AWS_HOSTED_ZONE_ID'),
             '--change-batch', changebatch,
             '--query', 'ChangeInfo.Comment',
             '--output', 'text']).decode('utf-8').strip()
