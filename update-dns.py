@@ -42,7 +42,7 @@ def check_required_environment_variables():
 def get_changebatch(dnsname, ipaddress, ttl):
     template = Template("""
 {
-    "Comment": "Updating $dnsname A record to $ipaddress with $ttl second TTL",
+    "Comment": "Updating $dnsname A record to $ipaddress with a $ttl second TTL",
     "Changes": [
         {
             "Action": "UPSERT",

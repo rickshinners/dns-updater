@@ -8,7 +8,7 @@ docker create \
 -e AWS_SECRET_ACCESS_KEY=<AWS_SECRET_ACCESS_KEY> \
 -e AWS_HOSTED_ZONE_ID=<AWS_HOSTED_ZONE_ID> \
 -e DNS_NAME=<DNS_NAME> \
-rickshinners/dns-updater-docker
+rickshinners/dns-updater
 ```
 
 # Parameters
