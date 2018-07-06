@@ -31,6 +31,7 @@ logger.info("AWS_HOSTED_ZONE_ID=%s" % os.getenv('AWS_HOSTED_ZONE_ID'))
 logger.info("DNS_NAME=%s" % os.getenv('DNS_NAME'))
 logger.info("DNS_TTL=%s" % os.getenv('DNS_TTL', 300))
 logger.info("CRON=%s" % os.getenv('CRON', '*/5 * * * *'))
+logger.info("BLACKLIST=%s" % os.getenv('BLACKLIST'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
 
 def check_required_environment_variables():
@@ -62,7 +63,7 @@ def get_changebatch(dnsname, ipaddress, ttl):
     d = {'dnsname':dnsname, 'ipaddress': ipaddress, 'ttl': ttl}
     return template.substitute(d)
 
-def get_current_ip():
+def get_current_dns_ip():
     return check_output(['aws', 'route53',
         'test-dns-answer',
         '--hosted-zone-id', os.getenv('AWS_HOSTED_ZONE_ID'),
@@ -71,12 +72,21 @@ def get_current_ip():
         '--query', 'RecordData[0]',
         '--output', 'text']).decode('utf-8').strip()
 
+def is_ip_in_blacklist(ip):
+    if(os.getenv('BLACKLIST') is None):
+        return False
+    blacklist = os.getenv('BLACKLIST').split(',')
+    return ip in blacklist
+
 def check_dns_and_update():
     myip = ipgetter.myip()
-    currentip = get_current_ip()
+    if is_ip_in_blacklist(myip):
+        logger.info("Current ip (%s) is blacklisted, skipping update" %(myip))
+        return
+    currentdnsip = get_current_dns_ip()
     logger.debug('current external ip: %s' % myip)
-    logger.debug('%s resolves to %s' %(os.getenv('DNS_NAME'), currentip))
-    if(myip != currentip):
+    logger.debug('%s resolves to %s' %(os.getenv('DNS_NAME'), currentdnsip))
+    if(myip != currentdnsip):
         changebatch = get_changebatch(os.getenv('DNS_NAME'), myip, os.getenv('DNS_TTL',300))
         change_message = check_output(['aws', 'route53',
             'change-resource-record-sets',
