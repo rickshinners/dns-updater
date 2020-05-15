@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-import ipgetter
+from ipgetter2 import ipgetter1 as ipgetter
 from crontab import CronTab
 from time import sleep
 from string import Template

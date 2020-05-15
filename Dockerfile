@@ -1,7 +1,7 @@
 FROM python:alpine
 RUN pip install \
         awscli \
-        ipgetter \
+        ipgetter2 \
         crontab
 COPY update-dns.py /update-dns.py
 ENV PYTHONUNBUFFERED 1
