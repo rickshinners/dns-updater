@@ -8,6 +8,8 @@ from string import Template
 from subprocess import check_output, call
 from netaddr import IPNetwork, IPAddress
 import logging
+import signal
+import sys
 
 def get_logging_level(level):
     return {
@@ -35,6 +37,12 @@ logger.info("CRON=%s" % os.getenv('CRON', '*/5 * * * *'))
 logger.info("BLACKLIST=%s" % os.getenv('BLACKLIST'))
 logger.info("CIDRMASK=%s" % os.getenv('CIDRMASK'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
+
+def sig_int_handler(sig, frame):
+    logger.info("Caught SIGINT, exiting...")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, sig_int_handler)
 
 def check_required_environment_variables():
     required_env = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_HOSTED_ZONE_ID', 'DNS_NAME']
@@ -111,9 +119,5 @@ check_dns_and_update()
 
 schedule = CronTab(os.getenv('CRON', '*/5 * * * *'))
 while(True):
-    try:
-        sleep(schedule.next(default_utc=True))
-        check_dns_and_update()
-    except KeyboardInterrupt:
-        logger.debug("Exiting after KeyboardInterrupt")
-        exit(0)
+    sleep(schedule.next(default_utc=True))
+    check_dns_and_update()
