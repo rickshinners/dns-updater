@@ -38,11 +38,12 @@ logger.info("BLACKLIST=%s" % os.getenv('BLACKLIST'))
 logger.info("CIDRMASK=%s" % os.getenv('CIDRMASK'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
 
-def sig_int_handler(sig, frame):
+def terminate_signal_handler(sig, frame):
     logger.info("Caught SIGINT, exiting...")
     sys.exit(0)
 
-signal.signal(signal.SIGINT, sig_int_handler)
+signal.signal(signal.SIGINT, terminate_signal_handler)
+signal.signal(signal.SIGTERM, terminate_signal_handler)
 
 def check_required_environment_variables():
     required_env = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_HOSTED_ZONE_ID', 'DNS_NAME']
