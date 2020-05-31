@@ -39,7 +39,7 @@ logger.info("CIDRMASK=%s" % os.getenv('CIDRMASK'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
 
 def terminate_signal_handler(sig, frame):
-    logger.info("Caught SIGINT, exiting...")
+    logger.info("Caught exit signal(%s), exiting..." % (sig))
     sys.exit(0)
 
 signal.signal(signal.SIGINT, terminate_signal_handler)
