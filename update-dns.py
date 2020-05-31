@@ -6,6 +6,7 @@ from crontab import CronTab
 from time import sleep
 from string import Template
 from subprocess import check_output, call
+from netaddr import IPNetwork, IPAddress
 import logging
 
 def get_logging_level(level):
@@ -32,6 +33,7 @@ logger.info("DNS_NAME=%s" % os.getenv('DNS_NAME'))
 logger.info("DNS_TTL=%s" % os.getenv('DNS_TTL', 300))
 logger.info("CRON=%s" % os.getenv('CRON', '*/5 * * * *'))
 logger.info("BLACKLIST=%s" % os.getenv('BLACKLIST'))
+logger.info("CIDRMASK=%s" % os.getenv('CIDRMASK'))
 logger.info("LOG_LEVEL=%s" % os.getenv('LOG_LEVEL', 'INFO'))
 
 def check_required_environment_variables():
@@ -78,10 +80,18 @@ def is_ip_in_blacklist(ip):
     blacklist = os.getenv('BLACKLIST').split(',')
     return ip in blacklist
 
+def is_ip_in_cidrmask(ip):
+    if(os.getenv('CIDRMASK') is None):
+        return True
+    return IPAddress(ip) in IPNetwork(os.getenv('CIDRMASK'))
+
 def check_dns_and_update():
     myip = ipgetter.myip()
     if is_ip_in_blacklist(myip):
         logger.info("Current ip (%s) is blacklisted, skipping update" %(myip))
+        return
+    if not is_ip_in_cidrmask(myip):
+        logger.info("Current ip (%s) is not in the provided CIDR mask, skipping update" %(myip))
         return
     currentdnsip = get_current_dns_ip()
     logger.debug('current external ip: %s' % myip)

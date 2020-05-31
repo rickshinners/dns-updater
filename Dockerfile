@@ -2,7 +2,8 @@ FROM python:alpine
 RUN pip install \
         awscli \
         ipgetter2 \
-        crontab
+        crontab \
+        netaddr
 COPY update-dns.py /update-dns.py
 ENV PYTHONUNBUFFERED 1
 RUN chmod a+x /update-dns.py

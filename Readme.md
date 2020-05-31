@@ -18,5 +18,6 @@ rickshinners/dns-updater
 * *DNS_NAME* DNS name to set to the running instance's external IP
 * *CRON* The cron schedule on which to run. Defaults to every 5 minutes. Time is in UTC
 * *BLACKLIST* A comma delimited list of IPs to ignore
+* *CIDRMASK* A CIDR network definition where any IPs outside of this network will be ignored
 * *DNS_TTL* TTL in seconds for the DNS record.  Defaults to 300
 * *LOG_LEVEL* Logging level [CRITICAL, ERROR, WARNING, INFO, DEBUG] Defaults to INFO
